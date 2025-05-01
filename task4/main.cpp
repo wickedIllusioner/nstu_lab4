@@ -1,30 +1,25 @@
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 #include <map>
-#include <unordered_set>
+#include <vector>
 
 using namespace std;
 
-ostream& operator<<(ostream& os, unordered_set<string> uset) {
-    for (auto elem : uset)
-        os << elem << " ";
-    os << endl;
-
-    return os;
-}
-
-void fill_candidates(istream& is, unordered_set<string>& candidates, int total_candidates) {
+// Заполнение списка голосов
+void fill_candidates(istream& is, vector<string>& candidates, int total_candidates) {
     string val;
     for (int i = 0; i < total_candidates; ++i) {
         is >> val;
-        candidates.insert(val);
+        candidates.push_back(val);
     }
 }
 
-
-map<string, int> BordaCount(const map<int, unordered_set<string>>& votes, int total_candidates) {
+// Метод Борда
+vector<pair<string, int>>  BordaCount(const map<int, vector<string>>& votes, int total_candidates) {
     map<string, int> rating;
 
+    // Тело работы метода Борда
     for (auto vote : votes) {
         int fine {1};
         for (string candidate : vote.second) {
@@ -33,13 +28,20 @@ map<string, int> BordaCount(const map<int, unordered_set<string>>& votes, int to
         }
     }
 
-    return rating;
+    vector<pair<string, int>> sortedRating(rating.begin(), rating.end());
+    sort(sortedRating.begin(), sortedRating.end(),
+        [](pair<string, int>& a, pair<string, int>& b) {
+            return a.second > b.second;
+        });
+
+
+    return sortedRating;
 }
 
 
 
 int main() {
-    map<int, unordered_set<string>> votes;
+    map<int, vector<string>> votes;
     int n {}, k {};     // n - число кандидатов, k - число избирателей
     cout << "Введите число кандитатов (n) и избирателей (k):\t";
     cin >> n >> k;
@@ -49,14 +51,13 @@ int main() {
         fill_candidates(cin, votes[i+1],  n);
     }
 
-    // for (auto vote : votes) {
-    //     cout << vote.second;
-    // }
 
-    // auto borda = BordaCount(votes, n);
-    // for (auto elem : borda) {
-    //     cout << elem.first << " : " << elem.second << endl;
-    // }
+    auto borda = BordaCount(votes, n);
+    if (borda[0].second == borda[1].second) {
+        cout << "Определить однозначного победителя невозможно." << endl;
+    } else {
+        cout << "Победитель: " << borda[0].first << ". Кол-во очков: " << borda[0].second << endl;
+    }
 
     return 0;
 }
