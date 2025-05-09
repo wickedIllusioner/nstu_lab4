@@ -1,5 +1,3 @@
-// ДОДЕЛАТЬ ЗАДАНИЕ 3 !!!
-
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -8,9 +6,51 @@
 #include <chrono>
 #include <vector>
 #include <map>
+#include <utility>
 
 using namespace std;
 
+template <typename T>
+ostream& operator<<(ostream& os, vector<T> v) {
+    for (T elem : v)
+        os << elem << " ";
+    os << endl;
+    return os;
+}
+
+// Разделитель между задачами
+void TaskDivisor(int n) {
+    if (n == 1)
+        printf("Задание №%d\n", n);
+    else
+        printf("\nЗадание №%d\n", n);
+}
+
+
+// Вычисление среднего значения
+double average(const vector<double>& vec) {
+    double sum = accumulate(vec.begin(), vec.end(), 0.);
+    return sum / vec.size();
+}
+
+// Смена порядка первого и последнего разряда четного числа
+double SwapDigits(double num) {
+    // Операция перевода вещественного числа в строковый тип
+    stringstream ss;
+    ss << num;
+    string str_num = ss.str();
+
+    // Поиск индекса знака точки
+    auto dot_idx = str_num.find(".");
+    string int_part = str_num.substr(0, dot_idx);
+    swap(int_part[0], int_part.back());
+
+    string result = int_part + str_num.substr(dot_idx);
+    return stod(result);
+}
+
+
+// Задание 1
 vector<double> func1(unsigned seed) {
     minstd_rand0 rd(seed);
     uniform_int_distribution<> vect(10, 1000);
@@ -23,12 +63,7 @@ vector<double> func1(unsigned seed) {
     return res;
 }
 
-
-double average(const vector<double>& vec) {
-    double sum = accumulate(vec.begin(), vec.end(), 0.);
-    return sum / vec.size();
-}
-
+// Задание 2
 double func2(const vector<double>& vec) {
     double avg = average(vec);
     double result {};
@@ -39,8 +74,19 @@ double func2(const vector<double>& vec) {
     return result;
 }
 
+// Задание 3
+void func3(vector<double>& vec) {
+    for (double& elem : vec) {
+        if (elem < 10 || (int)elem % 10 == 0) continue;
+        auto n = find(vec.begin(), vec.end(), elem);
+        if ((int)(n - vec.begin()) % 2 == 1 && (int)elem % 2 == 0)
+            elem = SwapDigits(elem);
+    }
+}
+
+// Задание 4
 void func4() {
-    vector<int> v = {25,73,100,22,82};
+    vector<int> v {25,73,100,22,82};
     for (int i = 0; i < v.size()-1; ++i) {
         int tmp = v[i];
         v[i] = v[i+1];
@@ -50,51 +96,64 @@ void func4() {
     for (int elem : v) {
         cout << elem << " ";
     }
+    cout << endl;
 }
 
-map<int, int> func5(vector<int>& vec) {
-    map<int, int> res;
+// Задание 5
+pair<map<int,int>, vector<int>> func5(const vector<int>& v) {
+    map<int, int> frequency;
+    vector<int> unique_vec;
 
-    for (int elem : vec) {
-        res[elem]++;
+    for (int elem : v) {
+        frequency[elem]++;
+        if ( find(unique_vec.begin(), unique_vec.end(), elem) == unique_vec.end() )
+            unique_vec.push_back(elem);
     }
 
-    sort(vec.begin(), vec.end());
-    auto last = unique(vec.begin(), vec.end());
-    vec.erase(last, vec.end());
-
-    return res;
+    return make_pair(frequency, unique_vec);
 }
 
-
-
 int main() {
-    unsigned seed1 = chrono::system_clock::now().time_since_epoch().count();
+    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
 
-    auto result1 = func1(seed1);
-    // for (auto elem : result1)
-    //     cout << elem << " ";
+    // Задание 1
+    auto vec = func1(seed);
+    TaskDivisor(1);
+    cout << vec;
 
-    // ЗАДАНИЕ 5
+    // Задание 2
+    double avg = func2(vec);
+    TaskDivisor(2);
+    cout << avg << endl;
+
+    // Задание 3
+    func3(vec);
+    TaskDivisor(3);
+    cout << vec;
+
+    // Задание 4
+    TaskDivisor(4);
+    func4();
+
+    // Задание 5
+    TaskDivisor(5);
     vector<int> nums;
-    minstd_rand0 rd(seed1);
+    minstd_rand0 rd(seed);
     uniform_int_distribution<> dist(-10, 10);
 
     for (int i = 0; i < 50; ++i)
         nums.push_back(dist(rd));
+    cout << nums;
 
-    for (auto elem : nums)
-        cout << elem << " ";
+    auto [frequency, no_repeat] = func5(nums);
+    cout << "Массив без повторяющихся элементов: " << endl;
+    for (int num : no_repeat)
+        cout << num << " ";
 
-    cout << endl;
-    auto mm = func5(nums);
-    for (auto elem : mm)
-        cout << elem.first << " : " << setw(2) <<  elem.second << endl;
-
-    for (auto elem : nums)
-        cout << elem << " ";
-
-
+    cout << "\nЧастота чисел в массиве: " << endl;
+    for (auto pr : frequency) {
+        cout << setw(2) <<  pr.first << " : " << setw(2) <<  pr.second << endl;
+    }
 
     return 0;
 }
