@@ -43,7 +43,9 @@ double SwapDigits(double num) {
     // Поиск индекса знака точки
     auto dot_idx = str_num.find(".");
     string int_part = str_num.substr(0, dot_idx);
-    swap(int_part[0], int_part.back());
+    if (str_num.back() != 0) {
+        swap(int_part[0], str_num.back());
+    }
 
     string result = int_part + str_num.substr(dot_idx);
     return stod(result);
@@ -79,7 +81,7 @@ void func3(vector<double>& vec) {
     for (double& elem : vec) {
         if (elem < 10 || (int)elem % 10 == 0) continue;
         auto n = find(vec.begin(), vec.end(), elem);
-        if ((int)(n - vec.begin()) % 2 == 1 && (int)elem % 2 == 0)
+        if ((int)(n - vec.begin()) % 2 == 1 && static_cast<int>(elem) % 2 == 0)
             elem = SwapDigits(elem);
     }
 }

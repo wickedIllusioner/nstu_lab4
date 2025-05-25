@@ -8,7 +8,7 @@
 using namespace std;
 
 // Проверка на лишнего кандидата
-bool ExcessCandCheck(string input, vector<string> candidates) {
+bool ExcessCandCheck(const string input, vector<string> candidates) {
     return find(candidates.begin(), candidates.end(), input) == candidates.end();
 }
 
@@ -53,7 +53,7 @@ string findCondorsetPair(const string c1, const string c2, const map<int, vector
 
 
 // Метод Борда
-string BordaCount(const map<int, vector<string>>& votes, int total_candidates) {
+void BordaCount(const map<int, vector<string>>& votes, int total_candidates) {
     map<string, int> rating;
 
     // Тело работы метода Борда
@@ -72,21 +72,26 @@ string BordaCount(const map<int, vector<string>>& votes, int total_candidates) {
             return a.second > b.second;
         });
 
-    if (sortedRating[0].second == sortedRating[1].second)
-        return "Определить однозначного победителя невозможно.";
+    if (sortedRating[0].second == sortedRating[1].second) {
+        cout << "Определить однозначного победителя невозможно." << endl;
+        return ;
+    }
 
-    return "Победитель: " + sortedRating[0].first;
+    cout << "Победитель: " << sortedRating[0].first << endl;
 }
 
 
 // Метод Кондорсе
-string CondorsetMethod(const map<int, vector<string>>& votes, const vector<string>& candidates_list) {
+void CondorsetMethod(const map<int, vector<string>>& votes, const vector<string>& candidates_list) {
     map<string, int> candPriority;
 
     for (int i = 0; i < candidates_list.size()-1; ++i) {
         for (int j = i+1; j < candidates_list.size(); ++j) {
             auto win = findCondorsetPair(candidates_list[i], candidates_list[j], votes);
-            if (win == "NO") return "Победителя по методу Кондорсе не существует";
+            if (win == "NO") {
+                cout << "Победителя по методу Кондорсе не существует" << endl;
+                return ;
+            }
             candPriority[win]++;
         }
     }
@@ -97,10 +102,12 @@ string CondorsetMethod(const map<int, vector<string>>& votes, const vector<strin
             return a.second > b.second;
         });
 
-    if (sortedCand[0].second == sortedCand[1].second)
-        return "Победителя по методу Кондорсе не существует";
+    if (sortedCand[0].second == sortedCand[1].second) {
+        cout << "Победителя по методу Кондорсе не существует" << endl;
+        return ;
+    }
 
-    return "Победитель: " + sortedCand[0].second;
+    cout << "Победитель: " << sortedCand[0].first << endl;
 
 }
 
@@ -122,10 +129,10 @@ int main() {
     }
 
     cout << "\nМетод Борда: \t";
-    cout << BordaCount(votes, n) << endl;
+    BordaCount(votes, n);
 
     cout << "Метод Кондорсе: \t";
-    cout << CondorsetMethod(votes, all_cand) << endl;
+    CondorsetMethod(votes, all_cand);
 
     return 0;
 }

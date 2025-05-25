@@ -2,6 +2,7 @@
 #include <random>
 #include <chrono>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -115,6 +116,18 @@ int main() {
     unsigned seed = chrono::system_clock::now().time_since_epoch().count();
     minstd_rand rd(seed);
     uniform_int_distribution<> rounds(100, 200);
+    int total_rounds = rounds(rd);
+
+    cout << "Результат игры между первым и вторым алгоритмом:" << endl;
+    game(algo1, algo2, total_rounds);
+    cout << endl;
+
+    cout << "Результат игры между первым и третьим алгоритмом:" << endl;
+    game(algo1, algo3, total_rounds);
+    cout << endl;
+
+    cout << "Результат игры между вторым и третьим алгоритмом:" << endl;
+    game(algo2, algo3, total_rounds);
 
     return 0;
 }

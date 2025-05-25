@@ -1,11 +1,9 @@
-// ОБДУМАТЬ И ДОДЕЛАТЬ !!!
 #include <iostream>
 #include <iomanip>
 #include <cmath>
 
 using namespace std;
 const double epsilon = 1e-4;
-
 
 void print_data(int n, double x1, double x2) {
     cout << "|" << setw(4) << n << " | " << setw(8) << x1 << " | " << setw(8) << x2 << " | " << setw(12) <<  x2-x1 << " |" << endl;
@@ -20,12 +18,22 @@ double df(double x) {
 }
 
 double d2f(double x) {
-    return -( 2.0 / (x*x) );
+    return -( 2. / (x*x) );
 }
+
+double phi(double x) {
+    return x - 0.5 * (2 * log(x) - 0.5 * x + 1);
+}
+
+double dphi(double x) {
+    return 1.25 - 1./x;
+}
+
+
 
 // Метод половинного значения
 void dichotomy(double a, double b) {
-    cout << "Метод половинного значения: " << endl;
+    cout << "Метод половинного деления: " << endl;
     int k {0};
     double ck;
     cout << "|" << setw(4) << "N" << " | " << setw(8) << "an" << " | " << setw(8) << "bn" << " | " << setw(12) << "bn-an" << " |" << endl;
@@ -39,41 +47,43 @@ void dichotomy(double a, double b) {
         }
         k++;
         print_data(k, a, b);
-    } while (abs(b-a) > epsilon);
+    } while (fabs(b-a) > epsilon);
 
-    cout << "Корень: " << setprecision(8) << (a+b) / 2 << endl;
+    cout << "Корень: " << setprecision(6) << (a+b) / 2 << endl;
     cout << "Кол-во итераций: " << k << endl;
     cout << endl;
 }
 
 
-double phi(double x) {
-    return 4 * log(x) + 2;  // x = 4 ln x + 2
-}
-
 // Метод простых итераций
 void simple_iteration(double x0) {
     cout << "Метод простых итераций: " << endl;
+
+    if (abs(dphi(x0)) > 1) {
+        cout << "Невозможно применить метод. Выберите другое начальное приближение" << endl;
+        return ;
+    }
+
     int k = 0;
     double x1, prev_x;
     cout << "|" << setw(4) << "N" << " | " << setw(8) << "xn" << " | " << setw(8) << "xn1" << " | " << setw(12) << "xn1-xn" << " |" << endl;
 
     do {
+        k++;
         prev_x = x0;
         x1 = phi(x0);
         print_data(k, x0, x1);
         x0 = x1;
-        k++;
-    } while (abs(x1 - prev_x) >= epsilon);
+    } while (fabs(x1 - prev_x) >= epsilon);
 
-    cout << "Корень: " << setprecision(8) << x1 << endl;
+    cout << "Корень: " << setprecision(6) << x1 << endl;
     cout << "Кол-во итераций: " << k << endl;
 }
 
 
 // Метод Ньютона
 void newton(double x0) {
-    cout << "Метод Ньютона: " << endl;
+    cout << "Метод Ньютона:" << endl;
     if (f(x0) * d2f(x0) <= 0) {
         cout << "Невозможно применить метод. Выберите другое начальное приближение" << endl;
         return ;
@@ -91,15 +101,15 @@ void newton(double x0) {
         print_data(k, xk, xk1);
     }
 
-    cout << "Корень: " << setprecision(8) << xk1 << endl;
+    cout << "Корень: " << setprecision(6) << xk1 << endl;
     cout << "Кол-во итераций: " << k << endl;
     cout << endl;
 }
 
 int main() {
-    dichotomy(1, 12);
-    newton(0.2);
-    simple_iteration(1);
+    dichotomy(0, 1);
+    newton(0.5);
+    simple_iteration(0.5);
 
     return 0;
 }

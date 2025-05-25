@@ -34,7 +34,11 @@ pair<vector<int>, int> task3(int x0, int a, int b, int c) {
 
 
 int main() {
-    auto func = task3(5,3,3,7);
+    int x0, a, b, c;
+    cout << "Введите значения: нач.знач, множитель, инкремент, диапазон" << endl;
+    cin >> x0 >> a >> b >> c;
+
+    auto func = task3(x0, a, b, c);
     cout << func.first << func.second;
 
     return 0;
